@@ -30,6 +30,10 @@ it is a shorter syntax than a function expression and does not have its own this
 It is a proxy of a value not known when the promise is created, it can associates multiple handlers with an asynchronous action's success value and failure reason.(reject,resolve,pending)
 #### this key word
 The value of this, when used in a function, is the object that "owns" the function.The value of this, when used in an object, is the object itself. The this keyword in an object constructor does not have a value. It is only a substitute for the new object.The value of this will become the new object when the constructor is used to create an object.
+#### Scope and Context
+scope is function-based while context is object-based.scope pertains to the variable access of a function when it is invoked. Context is always the value of the this keywor which is a reference to the object that "owns" the currently executing code.
+#### execution context
+An execution context can be divided into a creation and execution phase. In the creation phase, the interpreter will first create a variable object (also called an activation object) that is composed of all the variables, function declarations, and arguments defined inside the execution context. From there the scope chain is initialized next, and the value of this is determined last. Then in the execution phase, code is interpreted and executed.
 
 
 -----
@@ -50,7 +54,14 @@ In the javascript world, almost everthing could to be an object. Tt is a map th
         - freeze a frozon object can no longer be changed, however,it only applies to the immediate properties of object itself and will prevent future property addition
         - seal preventing new properties from being added to it and marking all existing properties as non-configurable. Values of present properties can still be changed as long as they are writable.
 - object.assign: &nbsp; copies the values of all enumerable own properties from one or more source objects to a target object *Object.assign(target, ...sources)*
-- 
+- Event delegation
+    - if there are multiple elements inside one parent, we want to handle all of the elements inside, don't bind event to every inside elements, instead, bind the single handler in parent and get the child from the event.target. Event delegation help simplify event handling by smart usage of bubbling
+- enumerability
+    Enumerable properties are those properties whose internal enumerable flag is set to true,Enumerable properties show up in for...in loops
+- Immutable object is an object whose state can be modified after it is created.Examples of native JavaScript values that are immutable are numbers and strings.
+
+- Observable
+  - observable support for passing messages between publishers and subscribers obserble are lazy and it can delivery multiple data in a row like stream. observable only runs when it is subscribe use to handle http  and event or handling multiple values 
 
 ---
 ## regular expression 
@@ -75,10 +86,51 @@ In the javascript world, almost everthing could to be an object. Tt is a map th
     - ```/^[\w]{6,15}$/```
 - match a password(at leadt 6 characters, at max 15 characters and at least has a captial letter and a special symbol) 
     - ``` ^.*(?=.{6,15})(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*?\(\)]).*$```
--
+- match an emial
+    - ``` /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/```
 
 
+## Important embeded method
+- map: &nbsp; create a new array with the results of calling a provided function on every element in the calling array
+- reduce: &nbsp; return a new array, reduce((accumulator,current)=>{},initialValue)
+- ilter: &nbsp; method creates a new array with all elements that pass the test implemented by the provided function.
+- slice: &nbsp; arr.slice([begin[, end]]) returns a shallow copy of a portion of an array into a new array object selected from begin to end (end not included). 
+- push, unshift: &nbsp; method adds one or more elements to the end of an array and returns the new **length** of the array
+- concat: &nbsp; This method does not change the existing arrays, but instead returns a new array.
+- split: &nbsp; splits a String object into an array of strings by separating the string into substrings, using a specified separator string to determine where to make each split.
 
+## Inheritance
 
+- In javascript, it use prototype chain to implement inheritance between objects,if we want to create a child ingeritance object, Firstly, we need to call the super constructor and then extends the supperclass.(overload=> no, override=> prototype,Es6 just rewrite the method in the child class)
 
+``` javascript
+// Create a class
+function Vehicle(color){
+  this.color = color;
+}
 
+// Add an instance method
+Vehicle.prototype.go = function(){
+  return "Underway in " + this.color;
+}
+
+// Add a second class
+function Car(color){
+  this.color = color;
+}
+
+// And declare it is a subclass of the first
+Car.prototype = new Vehicle();
+
+// Override the instance method
+Car.prototype.go = function(){
+  return Vehicle.prototype.go.call(this) + " car"
+}
+
+// Create some instances and see the overridden behavior.
+var v = new Vehicle("blue");
+v.go() // "Underway in blue"
+
+var c = new Car("red");
+c.go() // "Underway in red car" 
+```
